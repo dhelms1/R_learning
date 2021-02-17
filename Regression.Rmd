@@ -1,0 +1,88 @@
+---
+title: "Multiple Linear Regression"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE)
+```
+
+# Regression Notebook
+Notebook for exploring topics in MLR. Import packages needed:
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(leaps)
+library(stargazer)
+```
+## Data Import
+Import data directly from [data.world](https://data.world/nrippner/ols-regression-challenge) website. Follow link to see description of features.
+```{r}
+df <- read.csv("https://query.data.world/s/2jv7merfywlkqib4cspioa4zrf25eu", header=TRUE, stringsAsFactors=FALSE)
+```
+
+## Exploratory Data Analysis {.tabset .tabset-fade .tabset-pills}
+### Part 1
+```{r}
+# Code here
+```
+
+### Part 2 
+```{r}
+# Code here
+```
+
+### Part 3 
+```{r}
+# Code here
+```
+
+### Part 4 
+```{r}
+# Code here
+```
+
+
+## Data Preprocessing {.tabset .tabset-fade .tabset-pills}
+### Part 1
+```{r}
+# Code here
+```
+
+### Part 2 
+```{r}
+# Code here
+```
+
+### Part 3 
+```{r}
+# Code here
+```
+
+### Part 4 
+```{r}
+# Code here
+```
+
+
+
+## Modeling {.tabset .tabset-fade .tabset-pills}
+### Part 1
+```{r}
+# Code here
+```
+
+### Part 2 
+```{r}
+# Code here
+```
+
+### Part 3 
+```{r}
+# Code here
+```
+
+
+## Conclusion
+
