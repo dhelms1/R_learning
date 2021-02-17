@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE)
 Notebook for exploring topics in MLR. Import packages needed:
 ```{r}
 library(ggplot2)
+library(tidyverse)
 library(dplyr)
 library(tidyr)
 library(leaps)
@@ -22,15 +23,45 @@ Import data directly from [data.world](https://data.world/nrippner/ols-regressio
 df <- read.csv("https://query.data.world/s/2jv7merfywlkqib4cspioa4zrf25eu", header=TRUE, stringsAsFactors=FALSE)
 ```
 
-## Exploratory Data Analysis {.tabset .tabset-fade .tabset-pills}
-### Part 1
+## Exploratory DataAnalysis {.tabset .tabset-fade .tabset-pills}
+### Missing Data  
+We will want to start by assessing any missing data, and determining if the features will be filled or dropped based on their missing value counts.
 ```{r}
-# Code here
+colnames(df)[apply(df, 2, anyNA)]
+
+sum(is.na(df["PctSomeCol18_24"])) # 2285 of 3047 values missing (DROP FEATURE)
+sum(is.na(df["PctEmployed16_Over"])) # 152 of 3047 values missing (FILL)
+sum(is.na(df["PctPrivateCoverageAlone"])) # 609 of 3047 values missing (FILL)
+```
+The *PctSomeCol18_24* is missing around 75% of its data, so it will be dropped from the inputs. The *PctEmployed16_Over* has a slight left skew but was approximately normally distributed, so the missing values will be filled with median (same value as mean but was rounded to 1 decimal place). *PctPrivateCoverageAlone* was normally distributed, and will be filled with its median value as well.
+```{r}
+median.ppca.fill <- median(df[,"PctPrivateCoverageAlone"], na.rm=TRUE) # 48.7
+median.pe16.fill <- median(df[,"PctEmployed16_Over"], na.rm=TRUE) # 54.5
+
+df <- df %>% mutate(PctPrivateCoverageAlone = ifelse(is.na(PctPrivateCoverageAlone), 
+                                                     median.ppca.fill, 
+                                                     PctPrivateCoverageAlone),
+                    PctEmployed16_Over = ifelse(is.na(PctEmployed16_Over), 
+                                                median.pe16.fill, 
+                                                PctEmployed16_Over))
+
+df$PctSomeCol18_24 <- NULL # Drop column
+any(is.na(df))
 ```
 
-### Part 2 
+
+### Outliers  
+From a quick check by summary table (omitted from report for size of output) it seems that *popEst2015*, *studyPerCap*, *MedianAge*, *PctBachDeg18_24*, *PctNoHS18_24*, *PctAsian*, and *PctOtherRace* all have outliers well above their 3rd Quartile. We will need to look into these features to make sure there was not an error in the data recording process.
+
 ```{r}
-# Code here
+outlier.check <- c('popEst2015', 'studyPerCap', 'MedianAge', 'PctBachDeg18_24', 
+                   'PctNoHS18_24', 'PctAsian', 'PctOtherRace')
+outlier.df <- data.frame(Feature=outlier.check, Quantile90=NA)
+
+for (idx in 1:7) { outlier.df[idx,2] <- round(unname(quantile(df[,outlier.check[idx]], 0.90)), 2) }
+outlier.df
+
+ggplot(gather(df[outlier.check]), aes(value)) + geom_histogram() + facet_wrap(~key, scales = 'free_x')
 ```
 
 ### Part 3 
@@ -68,14 +99,14 @@ df <- read.csv("https://query.data.world/s/2jv7merfywlkqib4cspioa4zrf25eu", head
 
 
 ## Modeling {.tabset .tabset-fade .tabset-pills}
-### Part 1
+### Model Setup
 ```{r}
 # Code here
 ```
 
-### Part 2 
+### Assumption Checks
 ```{r}
-# Code here
+# Linearity, Constant Variaibility (homoscedasticity), Normality of Residuals
 ```
 
 ### Part 3 
